@@ -1,7 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { trcp } from '../_trpc/client';
-import { Todos } from '@prisma/client';
+import { z } from 'zod';
 
 export default function TodoList() {
   const [input, setInput] = useState('');
@@ -10,13 +10,53 @@ export default function TodoList() {
     onSettled: () => {
       getTodos.refetch();
       setInput('');
+    },
+    onError: (error) => {
+      alert(error.message);
     }
   });
+  const removeTodo = trcp.removeTodo.useMutation({
+    onSettled: () => {
+      getTodos.refetch();
+    },
+    onError: (error) => {
+      alert(error.message);
+    }
+  });
+  const doneTodo = trcp.doneTodo.useMutation({
+    onSettled: () => {
+      getTodos.refetch();
+    },
+    onError: (error) => {
+      alert(error.message);
+    }
+  });
+
   const getTodos = trcp.getTodos.useQuery();
 
   return (
     <div className="flex flex-col gap-4 items-center">
-      <div>{JSON.stringify(getTodos.data)}</div>
+      {getTodos.data?.map((todo) => (
+        <div
+          key={todo.id}
+          className="flex justify-between items-center gap-3 bg-[#C8ACD6] rounded-md w-60 h-15 px-3 py-1"
+        >
+          <input
+            id={`check-${todo.id}`}
+            type="checkbox"
+            checked={!!todo.isDone}
+            style={{ zoom: 1.5 }}
+            onChange={() => doneTodo.mutate(todo.id)}
+          />
+          <div className="text-[#2E236C]">{todo.content}</div>
+          <button
+            className="text-[#2E236C] hover:text-[#2E236C] active:text:bg-[#C8ACD6] justify-end rounded-md w-5 h-10"
+            onClick={() => removeTodo.mutate(todo.id)}
+          >
+            X
+          </button>
+        </div>
+      ))}
       <input
         className="text-black"
         type="text"
@@ -26,7 +66,7 @@ export default function TodoList() {
         }}
       />
       <button
-        className="bg-slate-400 rounded-md w-40 h-10"
+        className="bg-[#C8ACD6] hover:bg-[#433D8B] active:hover:bg-[#2E236C] rounded-md w-40 h-10"
         onClick={() => addTodo.mutate(input)}
       >
         Add Todo

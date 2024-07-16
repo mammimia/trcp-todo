@@ -21,6 +21,43 @@ export const appRouter = router({
         content: opts.input
       }
     });
+  }),
+  removeTodo: publicProcedure.input(z.number()).mutation(async (opts) => {
+    const todo = await prisma.todos.findUnique({
+      where: {
+        id: opts.input
+      }
+    });
+
+    if (!todo) {
+      throw new Error('Todo not found');
+    }
+
+    return await prisma.todos.delete({
+      where: {
+        id: opts.input
+      }
+    });
+  }),
+  doneTodo: publicProcedure.input(z.number()).mutation(async (opts) => {
+    const todo = await prisma.todos.findUnique({
+      where: {
+        id: opts.input
+      }
+    });
+
+    if (!todo) {
+      throw new Error('Todo not found');
+    }
+
+    return await prisma.todos.update({
+      where: {
+        id: opts.input
+      },
+      data: {
+        isDone: !todo.isDone
+      }
+    });
   })
 });
 
