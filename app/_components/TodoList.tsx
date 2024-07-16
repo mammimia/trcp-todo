@@ -6,7 +6,12 @@ import { Todos } from '@prisma/client';
 export default function TodoList() {
   const [input, setInput] = useState('');
 
-  const addTodo = trcp.addTodo.useMutation();
+  const addTodo = trcp.addTodo.useMutation({
+    onSettled: () => {
+      getTodos.refetch();
+      setInput('');
+    }
+  });
   const getTodos = trcp.getTodos.useQuery();
 
   return (
@@ -22,11 +27,7 @@ export default function TodoList() {
       />
       <button
         className="bg-slate-400 rounded-md w-40 h-10"
-        onClick={async () => {
-          await addTodo.mutateAsync(input);
-          getTodos.refetch();
-          setInput('');
-        }}
+        onClick={() => addTodo.mutate(input)}
       >
         Add Todo
       </button>

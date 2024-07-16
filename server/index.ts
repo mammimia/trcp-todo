@@ -12,10 +12,10 @@ export const appRouter = router({
     return await prisma.todos.findMany();
   }),
   addTodo: publicProcedure.input(z.string()).mutation(async (opts) => {
-    console.log(opts);
     if (!opts.input || opts.input === '' || opts.input?.trim() === '') {
       throw new Error('Input is required');
     }
+
     return await prisma.todos.create({
       data: {
         content: opts.input
