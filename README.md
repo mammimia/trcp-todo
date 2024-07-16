@@ -14,7 +14,7 @@ Then, install the following dependencies:
 # Install trpc
 npm install @trpc/server@next @trpc/client@next
 # Install trcp/react-query and tanstack/react-query
-npm install @trpc/react-query@next @tanstack/react-query@latest   
+npm install @trpc/react-query@next @tanstack/react-query@latest
 ```
 
 Create a `server` folder in the root of the project and add the following files:
@@ -24,3 +24,10 @@ server/
     trpc.ts
 ```
 
+## Project Configuration
+
+Add .env file in the root of the project and add the following environment variables:
+
+```bash
+DATABASE_URL=postgres://user:password@localhost:5432/dbname
+```
