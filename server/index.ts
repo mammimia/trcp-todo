@@ -1,8 +1,12 @@
-import { PrismaClient, Todos } from '@prisma/client';
-import { publicProcedure, router } from './trcp';
+import { PrismaClient } from '@prisma/client';
+import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
+import { publicProcedure } from './trcp';
 
 const prisma = new PrismaClient();
+
+const t = initTRPC.create();
+const { createCallerFactory, router } = t;
 
 export const appRouter = router({
   helloWorld: publicProcedure.query(async () => {
@@ -62,3 +66,6 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+
+const createCaller = createCallerFactory(appRouter);
+export const serverClient = createCaller({});

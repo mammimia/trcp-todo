@@ -2,8 +2,13 @@
 import { useState } from 'react';
 import { trcp } from '../_trpc/client';
 import { z } from 'zod';
+import { serverClient } from '@/server';
 
-export default function TodoList() {
+export default function TodoList({
+  initialTodos
+}: {
+  initialTodos: Awaited<ReturnType<(typeof serverClient)['getTodos']>>;
+}) {
   const [input, setInput] = useState('');
 
   const addTodo = trcp.addTodo.useMutation({
@@ -32,7 +37,11 @@ export default function TodoList() {
     }
   });
 
-  const getTodos = trcp.getTodos.useQuery();
+  const getTodos = trcp.getTodos.useQuery(undefined, {
+    initialData: initialTodos,
+    refetchOnMount: false,
+    refetchOnReconnect: false
+  });
 
   return (
     <div className="flex flex-col gap-4 items-center">
